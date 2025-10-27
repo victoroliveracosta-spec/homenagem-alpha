@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homenagem Póstuma</title>
+    <!-- Fonte Cormorant Garamond -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #004d40; color: #FFD700; font-family: 'Cormorant Garamond', serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; text-align: center; }
+        /* CORREÇÃO: Removendo opacity: 0 inicial para garantir que o primeiro nome seja visível */
+        #name-container { 
+            font-size: 4vw; 
+            font-weight: 700; 
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
+            /* opacity: 0; REMOVIDO */
+            transition: opacity 1s ease-in-out; 
+            padding: 20px; 
+            max-width: 90%; 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .fade-in { opacity: 1; }
+        .fade-out { opacity: 0; }
+        .controls { display: flex; gap: 20px; justify-content: center; align-items: center; padding: 20px; background-color: rgba(0, 0, 0, 0.3); border-top: 2px solid #FFD700; width: 100%; }
+        button { padding: 12px 30px; font-size: 1.2vw; font-weight: bold; color: #004d40; background-color: #FFD700; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: 'Cormorant Garamond', serif; }
+        button:hover { background-color: #FFC700; transform: scale(1.05); }
+        button:active { transform: scale(0.95); }
+        button:disabled { background-color: #999; cursor: not-allowed; opacity: 0.6; }
+        .info { color: #FFD700; font-size: 1vw; margin-left: 20px; }
+        .progress-bar { width: 300px; height: 8px; background-color: rgba(255, 215, 0, 0.3); border-radius: 5px; overflow: hidden; margin-left: 20px; }
+        .progress-fill { height: 100%; background-color: #FFD700; width: 0%; transition: width 0.1s linear; }
+    </style>
+</head>
+<body>
+    <div id="name-container">Carregando nomes...</div>
+    <div class="controls">
+        <button id="play-btn" disabled>▶ Play</button>
+        <button id="pause-btn" disabled>⏸ Pause</button>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="info"><span id="current-name-number">0</span> / <span id="total-names">0</span></div>
+    </div>
+
+    <script>
+        let names = [];
+        const durationPerName = 5 * 1000;
+        const transitionTime = 1000;
+        const container = document.getElementById('name-container');
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const currentNameNumber = document.getElementById('current-name-number');
+        const totalNamesEl = document.getElementById('total-names');
+
+        let currentIndex = 0;
+        let isPlaying = false;
+        let timeoutId = null;
+        let transitionTimeoutId = null;
+
+        // Carrega os nomes do arquivo JSON
+        fetch('names.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar names.json: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                names = data;
+                totalNamesEl.textContent = names.length;
+                playBtn.disabled = false;
+                
+                // Exibe o primeiro nome imediatamente (sem fade-in inicial)
+                if (names.length > 0) {
+                    container.textContent = names[0];
+                    container.style.opacity = 1; // Garante que o primeiro nome está visível
+                } else {
+                    container.textContent = "Lista de nomes vazia.";
+                }
+                
+                // Garante que o Play está habilitado e Pause desabilitado
+                playBtn.disabled = false;
+                pauseBtn.disabled = true;
+                
+            })
+            .catch(error => {
+                console.error("Erro ao carregar a lista de nomes:", error);
+                container.textContent = "Erro ao carregar nomes. Verifique se o arquivo names.json está na mesma pasta.";
+            });
+
+        function updateCounter() { currentNameNumber.textContent = currentIndex; }
+        function updateProgressBar() { progressFill.style.width = (currentIndex / names.length) * 100 + '%'; }
+
+        function showNextName() {
+            if (!isPlaying) return;
+
+            if (currentIndex >= names.length) {
+                container.textContent = "Em Memória de Todos os Falecidos";
+                container.classList.remove('fade-out');
+                container.classList.add('fade-in');
+                isPlaying = false;
+                playBtn.disabled = false;
+                pauseBtn.disabled = true;
+                return;
+            }
+            
+            // 1. Fade-out do nome atual
+            container.classList.remove('fade-in');
+            container.classList.add('fade-out');
+
+            // 2. Mudar o nome e fazer fade-in após o tempo de transição
+            transitionTimeoutId = setTimeout(() => {
+                container.textContent = names[currentIndex];
+                container.classList.remove('fade-out');
+                container.classList.add('fade-in');
+                currentIndex++;
+                updateCounter();
+                updateProgressBar();
+                timeoutId = setTimeout(showNextName, durationPerName);
+            }, transitionTime);
+        }
+
+        function play() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            
+            if (currentIndex >= names.length) { currentIndex = 0; }
+            
+            // Se estiver no início ou recomeçando
+            if (currentIndex === 0) {
+                container.textContent = names[currentIndex];
+                container.classList.remove('fade-out');
+                container.classList.add('fade-in');
+                currentIndex++;
+                updateCounter();
+                updateProgressBar();
+                timeoutId = setTimeout(showNextName, durationPerName);
+            } else {
+                // Se estava pausado, o nome atual já está na tela, 
+                // então agendamos a transição para o próximo nome
+                showNextName();
+            }
+        }
+
+        function pause() {
+            if (!isPlaying) return;
+            isPlaying = false;
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+            clearTimeout(timeoutId);
+            clearTimeout(transitionTimeoutId);
+        }
+
+        playBtn.addEventListener('click', play);
+        pauseBtn.addEventListener('click', pause);
+    </script>
+</body>
+</html>
