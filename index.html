@@ -90,8 +90,7 @@
 	            <button id="play-btn" disabled>▶ Play</button>
 	            <button id="pause-btn" disabled>⏸ Pause</button>
 	        </div>
-	        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-	        <div class="info"><span id="current-name-number">0</span> / <span id="total-names">0</span></div>
+	        
 	    </div>
 	    <script>
         let names = [];
@@ -102,9 +101,9 @@
 	        const playBtn = document.getElementById('play-btn');
 	        const pauseBtn = document.getElementById('pause-btn');
 	        const buttonContainer = document.getElementById('button-container'); // Novo elemento container dos botões
-        const progressFill = document.getElementById('progress-fill');
-        const currentNameNumber = document.getElementById('current-name-number');
-        const totalNamesEl = document.getElementById('total-names');
+	        // const progressFill = document.getElementById('progress-fill'); // Removido
+	        // const currentNameNumber = document.getElementById('current-name-number'); // Removido
+	        // const totalNamesEl = document.getElementById('total-names'); // Removido
 
         let currentIndex = 0;
         let isPlaying = false;
@@ -159,9 +158,9 @@
             })
             .then(data => {
                 // O JSON já é o array de nomes
-                names = data; 
-                totalNamesEl.textContent = names.length;
-                playBtn.disabled = false;
+	                names = data; 
+	                // totalNamesEl.textContent = names.length; // Removido
+	                playBtn.disabled = false;
                 
                 // Exibe o primeiro nome imediatamente
                 if (names.length > 0) {
@@ -169,22 +168,21 @@
                     displayCurrentName();
                     container.style.opacity = 1; 
                 } else {
-                    container.textContent = "Lista de nomes vazia.";
-                }
-                
-                playBtn.disabled = false;
-                pauseBtn.disabled = true;
-                
-            })
+	                container.textContent = "Lista de nomes vazia.";
+	                }
+	                
+	                playBtn.disabled = false;
+	                pauseBtn.disabled = true;
+	                
+	            })
             .catch(error => {
                 console.error("Erro ao carregar a lista de nomes:", error);
                 container.textContent = "Erro ao carregar nomes. Verifique se o arquivo names.json está na mesma pasta.";
-            });
-
-	        function updateCounter() { currentNameNumber.textContent = currentIndex + 1; } // +1 para exibição amigável
-	        function updateProgressBar() { progressFill.style.width = ((currentIndex + 1) / names.length) * 100 + '%'; }
+	            });
 	
-	        // Função para mostrar os botões (remover a classe de ocultação)
+		        // Funções de atualização de contador e barra de progresso removidas.
+		
+		        // Função para mostrar os botões (remover a classe de ocultação)
 	        // Função para mostrar os botões (remover a classe de ocultação)
 	        function showButtons() {
 	            buttonContainer.classList.remove('hidden-controls');
@@ -208,13 +206,12 @@
                 transitionTimeoutId = setTimeout(() => {
                     container.innerHTML = "Em Memória de Todos os Falecidos";
                     container.classList.remove('fade-out');
-                    container.classList.add('fade-in');
-                    isPlaying = false;
-                    playBtn.disabled = false;
-                    pauseBtn.disabled = true;
-                    currentNameNumber.textContent = names.length; // Atualiza contador para o total
-                    progressFill.style.width = '100%';
-                }, transitionTime);
+	                    container.classList.add('fade-in');
+	                    isPlaying = false;
+	                    playBtn.disabled = false;
+	                    pauseBtn.disabled = true;
+	                    // Contagem e barra de progresso removidas.
+	                }, transitionTime);
                 
                 return;
             }
@@ -228,12 +225,11 @@
 
             // 2. Mudar o nome e fazer fade-in após o tempo de transição
             transitionTimeoutId = setTimeout(() => {
-                displayCurrentName();
-                container.classList.remove('fade-out');
-                container.classList.add('fade-in');
-                updateCounter();
-                updateProgressBar();
-                // Agenda o próximo showNextName
+	                displayCurrentName();
+	                container.classList.remove('fade-out');
+	                container.classList.add('fade-in');
+	                // updateCounter() e updateProgressBar() removidas.
+	                // Agenda o próximo showNextName
                 timeoutId = setTimeout(showNextName, durationPerName); 
             }, transitionTime);
         }
@@ -273,11 +269,9 @@
 	        // A lógica de hover no CSS já garante que os botões apareçam
 	        // quando o mouse estiver sobre o div.controls.
 	        
-	        // Inicializa o contador e a barra de progresso
-	        updateCounter();
-	        updateProgressBar();
-	        
-	        // Mostra os botões inicialmente para permitir o primeiro play
+	        // Inicialização de contador e barra de progresso removidas.
+		        
+		        // Mostra os botões inicialmente para permitir o primeiro play
 	        showButtons();
     </script>
 </body>
