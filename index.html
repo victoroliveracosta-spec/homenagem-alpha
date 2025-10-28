@@ -94,8 +94,6 @@
 	        <div class="info"><span id="current-name-number">0</span> / <span id="total-names">0</span></div>
 	    </div>
 	    <script>
-
-    <script>
         let names = [];
         // CORREÇÃO: Usar ponto (.) como separador decimal em JavaScript (0.5 * 1000)
         const durationPerName = 0.5 * 1000; 
@@ -150,7 +148,7 @@
         }
 
         // Carrega os nomes do arquivo JSON
-        // CORREÇÃO: O arquivo names.json foi renomeado para names_data.json no sandbox para evitar confusão.
+	        
         fetch('names.json') 
             .then(response => {
                 if (!response.ok) {
