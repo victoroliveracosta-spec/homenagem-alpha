@@ -48,51 +48,51 @@
         }
         .fade-in { opacity: 1; }
         .fade-out { opacity: 0; }
-        .controls { 
-            display: flex; 
-            gap: 20px; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
-            background-color: rgba(0, 0, 0, 0.3); 
-            border-top: 2px solid #D4B851; 
-            width: 100%; 
-        }
+	        button { padding: 12px 30px; font-size: 1.2vw; font-weight: bold; color: #004d40; background-color: #D4B851; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: Arial, sans-serif; }
+	        button:hover { background-color: #C1A748; /* Tom mais escuro para o hover */ transform: scale(1.05); }
+	        button:active { transform: scale(0.95); }
+	        button:disabled { background-color: #999; cursor: not-allowed; opacity: 0.6; }
+	
+	        /* Novos estilos para o container dos botões, que agora será o único elemento na parte inferior */
+		        #button-container {
+		            display: flex;
+		            gap: 20px;
+		            justify-content: center;
+		            align-items: center;
+		            /* Remove o padding, background e border-top para eliminar a faixa */
+		            width: 100%;
+		            /* Adiciona um espaço para que os botões não fiquem colados no fundo */
+		            padding-bottom: 20px;
+		        }
+	
 	        /* Classe para ocultar os botões */
 	        .hidden-controls {
 	            visibility: hidden;
 	            opacity: 0;
 	            transition: visibility 0s 0.3s, opacity 0.3s ease;
 	        }
-	        /* Mostrar os botões quando o mouse estiver sobre a área de controles */
-	        .controls:hover .hidden-controls {
+	
+	        /* Mostrar os botões quando o mouse estiver sobre a área dos botões */
+	        #button-container:hover.hidden-controls {
 	            visibility: visible;
 	            opacity: 1;
 	            transition: opacity 0.3s ease;
 	        }
-	        /* Garantir que os botões dentro do container hidden-controls tenham o mesmo estilo */
+	        
+	        /* Garante que os botões em si não tenham transições desnecessárias */
 	        #button-container button {
-	            transition: opacity 0.3s ease;
+	            transition: none;
 	        }
-        button { padding: 12px 30px; font-size: 1.2vw; font-weight: bold; color: #004d40; background-color: #D4B851; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: Arial, sans-serif; }
-        button:hover { background-color: #C1A748; /* Tom mais escuro para o hover */ transform: scale(1.05); }
-        button:active { transform: scale(0.95); }
-        button:disabled { background-color: #999; cursor: not-allowed; opacity: 0.6; }
-        .info { color: #D4B851; font-size: 1vw; margin-left: 20px; }
-        .progress-bar { width: 300px; height: 8px; background-color: rgba(212, 184, 81, 0.3); /* Baseado no #D4B851 */ border-radius: 5px; overflow: hidden; margin-left: 20px; }
-        .progress-fill { height: 100%; background-color: #D4B851; width: 0%; transition: width 0.1s linear;},{find: }
+	        
     </style>
 </head>
 <body>
-	    <div id="name-container">Carregando nomes...</div>
-	    <div class="controls">
-	        <div id="button-container" class="hidden-controls" style="display: flex; gap: 20px;">
-	            <button id="play-btn" disabled>▶ Play</button>
-	            <button id="pause-btn" disabled>⏸ Pause</button>
-	        </div>
-	        
-	    </div>
-	    <script>
+		    <div id="name-container">Carregando nomes...</div>
+		        <div id="button-container" class="hidden-controls">
+		            <button id="play-btn" disabled>▶ Play</button>
+		            <button id="pause-btn" disabled>⏸ Pause</button>
+		        </div>
+		    <script>
         let names = [];
         // CORREÇÃO: Usar ponto (.) como separador decimal em JavaScript (0.5 * 1000)
         const durationPerName = 0.5 * 1000; 
@@ -266,13 +266,11 @@
 	        playBtn.addEventListener('click', play);
 	        pauseBtn.addEventListener('click', pause);
 	        
-	        // A lógica de hover no CSS já garante que os botões apareçam
-	        // quando o mouse estiver sobre o div.controls.
-	        
-	        // Inicialização de contador e barra de progresso removidas.
+		        // A lógica de hover no CSS já garante que os botões apareçam
+		        // quando o mouse estiver sobre a div #button-container.
 		        
 		        // Mostra os botões inicialmente para permitir o primeiro play
-	        showButtons();
+		        showButtons();
     </script>
 </body>
 </html>
