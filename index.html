@@ -89,8 +89,9 @@
 <body>
 		    <div id="name-container">Carregando nomes...</div>
 		        <div id="button-container" class="hidden-controls">
-		            <button id="play-btn" disabled>▶ Play</button>
-		            <button id="pause-btn" disabled>⏸ Pause</button>
+			            <button id="play-btn" disabled>▶ Play</button>
+			            <button id="pause-btn" disabled>⏸ Pause</button>
+			            <button id="fullscreen-btn">⛶ Tela Cheia</button>
 		        </div>
 		    <script>
         let names = [];
@@ -100,6 +101,7 @@
 	        const container = document.getElementById('name-container');
 	        const playBtn = document.getElementById('play-btn');
 	        const pauseBtn = document.getElementById('pause-btn');
+	        const fullscreenBtn = document.getElementById('fullscreen-btn'); // Novo botão de tela cheia
 	        const buttonContainer = document.getElementById('button-container'); // Novo elemento container dos botões
 	        // const progressFill = document.getElementById('progress-fill'); // Removido
 	        // const currentNameNumber = document.getElementById('current-name-number'); // Removido
@@ -193,6 +195,19 @@
 	            buttonContainer.classList.add('hidden-controls');
 	        }
 	
+	        // Função para alternar o modo de tela cheia
+	        function toggleFullscreen() {
+	            if (!document.fullscreenElement) {
+	                document.documentElement.requestFullscreen();
+	                fullscreenBtn.innerHTML = "⛶ Sair da Tela Cheia";
+	            } else {
+	                if (document.exitFullscreen) {
+	                    document.exitFullscreen();
+	                    fullscreenBtn.innerHTML = "⛶ Tela Cheia";
+	                }
+	            }
+	        }
+	
 	        function showNextName() {
             if (!isPlaying) return;
 
@@ -265,12 +280,13 @@
 
 	        playBtn.addEventListener('click', play);
 	        pauseBtn.addEventListener('click', pause);
+	        fullscreenBtn.addEventListener('click', toggleFullscreen); // Adiciona listener para o botão de tela cheia
 	        
-		        // A lógica de hover no CSS já garante que os botões apareçam
-		        // quando o mouse estiver sobre a div #button-container.
-		        
-		        // Mostra os botões inicialmente para permitir o primeiro play
-		        showButtons();
-    </script>
+			        // A lógica de hover no CSS já garante que os botões apareçam
+			        // quando o mouse estiver sobre a div #button-container.
+			        
+			        // Mostra os botões inicialmente para permitir o primeiro play
+			        showButtons();
+	    </script>
 </body>
 </html>
