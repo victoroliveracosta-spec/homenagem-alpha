@@ -48,7 +48,27 @@
         }
         .fade-in { opacity: 1; }
         .fade-out { opacity: 0; }
-        .controls { display: flex; gap: 20px; justify-content: center; align-items: center; padding: 20px; background-color: rgba(0, 0, 0, 0.3); border-top: 2px solid #D4B851; width: 100%; }
+        .controls { 
+            display: flex; 
+            gap: 20px; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-top: 2px solid #D4B851; 
+            width: 100%; 
+        }
+        /* Classe para ocultar os botões */
+        .hidden-controls button {
+            opacity: 0;
+            pointer-events: none; /* Impede cliques quando invisível */
+            transition: opacity 0.3s ease;
+        }
+        /* Mostrar os botões quando o mouse estiver sobre a área de controles */
+        .controls:hover .hidden-controls button {
+            opacity: 1;
+            pointer-events: auto;
+        }
         button { padding: 12px 30px; font-size: 1.2vw; font-weight: bold; color: #004d40; background-color: #D4B851; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: Arial, sans-serif; }
         button:hover { background-color: #C1A748; /* Tom mais escuro para o hover */ transform: scale(1.05); }
         button:active { transform: scale(0.95); }
@@ -59,22 +79,26 @@
     </style>
 </head>
 <body>
-    <div id="name-container">Carregando nomes...</div>
-    <div class="controls">
-        <button id="play-btn" disabled>▶ Play</button>
-        <button id="pause-btn" disabled>⏸ Pause</button>
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        <div class="info"><span id="current-name-number">0</span> / <span id="total-names">0</span></div>
-    </div>
+	    <div id="name-container">Carregando nomes...</div>
+	    <div class="controls">
+	        <div id="button-container" class="hidden-controls">
+	            <button id="play-btn" disabled>▶ Play</button>
+	            <button id="pause-btn" disabled>⏸ Pause</button>
+	        </div>
+	        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+	        <div class="info"><span id="current-name-number">0</span> / <span id="total-names">0</span></div>
+	    </div>
+	    <script>
 
     <script>
         let names = [];
         // CORREÇÃO: Usar ponto (.) como separador decimal em JavaScript (0.5 * 1000)
         const durationPerName = 0.5 * 1000; 
         const transitionTime = 1000;
-        const container = document.getElementById('name-container');
-        const playBtn = document.getElementById('play-btn');
-        const pauseBtn = document.getElementById('pause-btn');
+	        const container = document.getElementById('name-container');
+	        const playBtn = document.getElementById('play-btn');
+	        const pauseBtn = document.getElementById('pause-btn');
+	        const buttonContainer = document.getElementById('button-container'); // Novo elemento container dos botões
         const progressFill = document.getElementById('progress-fill');
         const currentNameNumber = document.getElementById('current-name-number');
         const totalNamesEl = document.getElementById('total-names');
@@ -154,10 +178,20 @@
                 container.textContent = "Erro ao carregar nomes. Verifique se o arquivo names.json está na mesma pasta.";
             });
 
-        function updateCounter() { currentNameNumber.textContent = currentIndex + 1; } // +1 para exibição amigável
-        function updateProgressBar() { progressFill.style.width = ((currentIndex + 1) / names.length) * 100 + '%'; }
-
-        function showNextName() {
+	        function updateCounter() { currentNameNumber.textContent = currentIndex + 1; } // +1 para exibição amigável
+	        function updateProgressBar() { progressFill.style.width = ((currentIndex + 1) / names.length) * 100 + '%'; }
+	
+	        // Função para mostrar os botões (remover a classe de ocultação)
+	        function showButtons() {
+	            buttonContainer.classList.remove('hidden-controls');
+	        }
+	
+	        // Função para ocultar os botões (adicionar a classe de ocultação)
+	        function hideButtons() {
+	            buttonContainer.classList.add('hidden-controls');
+	        }
+	
+	        function showNextName() {
             if (!isPlaying) return;
 
             // Se o índice atual for o último, paramos e exibimos a mensagem final
@@ -200,12 +234,13 @@
             }, transitionTime);
         }
 
-        function play() {
-            if (isPlaying) return;
-            
-            isPlaying = true;
-            playBtn.disabled = true;
-            pauseBtn.disabled = false;
+	        function play() {
+	            if (isPlaying) return;
+	            
+	            isPlaying = true;
+	            playBtn.disabled = true;
+	            pauseBtn.disabled = false;
+	            hideButtons(); // Oculta os botões após o play
             
             // Se já tiver terminado, recomeça do início
             if (currentIndex >= names.length - 1) { 
@@ -218,21 +253,28 @@
             showNextName();
         }
 
-        function pause() {
-            if (!isPlaying) return;
-            isPlaying = false;
-            playBtn.disabled = false;
-            pauseBtn.disabled = true;
-            clearTimeout(timeoutId);
-            clearTimeout(transitionTimeoutId);
-        }
+	        function pause() {
+	            if (!isPlaying) return;
+	            isPlaying = false;
+	            playBtn.disabled = false;
+	            pauseBtn.disabled = true;
+	            showButtons(); // Mostra os botões ao pausar para que o usuário possa dar play novamente
+	            clearTimeout(timeoutId);
+	            clearTimeout(transitionTimeoutId);
+	        }
 
-        playBtn.addEventListener('click', play);
-        pauseBtn.addEventListener('click', pause);
-        
-        // Inicializa o contador e a barra de progresso
-        updateCounter();
-        updateProgressBar();
+	        playBtn.addEventListener('click', play);
+	        pauseBtn.addEventListener('click', pause);
+	        
+	        // A lógica de hover no CSS já garante que os botões apareçam
+	        // quando o mouse estiver sobre o div.controls.
+	        
+	        // Inicializa o contador e a barra de progresso
+	        updateCounter();
+	        updateProgressBar();
+	        
+	        // Mostra os botões inicialmente para permitir o primeiro play
+	        showButtons();
     </script>
 </body>
 </html>
