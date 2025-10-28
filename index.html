@@ -58,17 +58,22 @@
             border-top: 2px solid #D4B851; 
             width: 100%; 
         }
-        /* Classe para ocultar os botões */
-        .hidden-controls button {
-            opacity: 0;
-            pointer-events: none; /* Impede cliques quando invisível */
-            transition: opacity 0.3s ease;
-        }
-        /* Mostrar os botões quando o mouse estiver sobre a área de controles */
-        .controls:hover .hidden-controls button {
-            opacity: 1;
-            pointer-events: auto;
-        }
+	        /* Classe para ocultar os botões */
+	        .hidden-controls {
+	            visibility: hidden;
+	            opacity: 0;
+	            transition: visibility 0s 0.3s, opacity 0.3s ease;
+	        }
+	        /* Mostrar os botões quando o mouse estiver sobre a área de controles */
+	        .controls:hover .hidden-controls {
+	            visibility: visible;
+	            opacity: 1;
+	            transition: opacity 0.3s ease;
+	        }
+	        /* Garantir que os botões dentro do container hidden-controls tenham o mesmo estilo */
+	        #button-container button {
+	            transition: opacity 0.3s ease;
+	        }
         button { padding: 12px 30px; font-size: 1.2vw; font-weight: bold; color: #004d40; background-color: #D4B851; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: Arial, sans-serif; }
         button:hover { background-color: #C1A748; /* Tom mais escuro para o hover */ transform: scale(1.05); }
         button:active { transform: scale(0.95); }
@@ -81,7 +86,7 @@
 <body>
 	    <div id="name-container">Carregando nomes...</div>
 	    <div class="controls">
-	        <div id="button-container" class="hidden-controls">
+	        <div id="button-container" class="hidden-controls" style="display: flex; gap: 20px;">
 	            <button id="play-btn" disabled>▶ Play</button>
 	            <button id="pause-btn" disabled>⏸ Pause</button>
 	        </div>
@@ -182,6 +187,7 @@
 	        function updateProgressBar() { progressFill.style.width = ((currentIndex + 1) / names.length) * 100 + '%'; }
 	
 	        // Função para mostrar os botões (remover a classe de ocultação)
+	        // Função para mostrar os botões (remover a classe de ocultação)
 	        function showButtons() {
 	            buttonContainer.classList.remove('hidden-controls');
 	        }
@@ -241,8 +247,8 @@
 	            playBtn.disabled = true;
 	            pauseBtn.disabled = false;
 	            hideButtons(); // Oculta os botões após o play
-            
-            // Se já tiver terminado, recomeça do início
+	            
+	            // Se já tiver terminado, recomeça do início
             if (currentIndex >= names.length - 1) { 
                 currentIndex = -1; // -1 para que o showNextName comece no 0
                 container.classList.remove('fade-in');
