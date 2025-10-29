@@ -52,6 +52,29 @@
 	        .fade-out { opacity: 0; }
 	
 	        /* Animação de Flutuação (Dança) */
+		        @keyframes float {
+		            0% { transform: translateY(0); }
+		            50% { transform: translateY(-5px); } /* Move 5px para cima */
+		            100% { transform: translateY(0); }
+		        }
+		
+		        /* Estilos para as palavras que dançam */
+		        .dancing-word {
+		            display: inline-block; /* Essencial para aplicar transformações */
+		            /* A animação de delay será injetada via JavaScript para um efeito de onda */
+		            animation: wordDance 1.5s ease-in-out infinite;
+		        }
+		
+		        /* Animação de Dança (Pulo/Balanço) */
+		        @keyframes wordDance {
+		            0%, 100% { transform: translateY(0) rotate(0deg); }
+		            25% { transform: translateY(-8px) rotate(2deg); }
+		            75% { transform: translateY(8px) rotate(-2deg); }
+		        }
+		        
+		        /* Mantendo o float para o container, mas o foco agora é no wordDance */
+		        
+		        /* Animação de Flutuação (Dança) */
 	        @keyframes float {
 	            0% { transform: translateY(0); }
 	            50% { transform: translateY(-5px); } /* Move 5px para cima */
@@ -146,15 +169,26 @@
             return { name, location };
         }
 
-        // Função para exibir o nome e a localização no container
+        // Função para envolver cada palavra com um <span> para animação
+function wrapTextWithSpans(text) {
+    // Substitui o espaço normal por um espaço não-quebrável após a palavra
+    // para que a animação não quebre a linha.
+    return text.split(' ').map((word, index) => {
+        return `<span class="dancing-word" style="animation-delay: ${index * 0.05}s">${word}</span>`;
+    }).join('&nbsp;'); // Usa &nbsp; para manter o espaçamento entre as palavras
+}
+
+// Função para exibir o nome e a localização no container
         function displayCurrentName() {
             const data = names[currentIndex];
             const parsed = parseNameAndLocation(data);
             
             // Usar innerHTML para criar duas linhas (nome e localização)
+            const nameHtml = wrapTextWithSpans(parsed.name);
+            const locationHtml = wrapTextWithSpans(parsed.location);
             container.innerHTML = `
-                <div class="name">${parsed.name}</div>
-                <div class="location">${parsed.location}</div>
+                <div class="name">${nameHtml}</div>
+                <div class="location">${locationHtml}</div>
             `;
         }
 
@@ -194,16 +228,7 @@
 	
 		        // Funções de atualização de contador e barra de progresso removidas.
 		
-		        // Função para mostrar os botões (remover a classe de ocultação)
-	        // Função para mostrar os botões (remover a classe de ocultação)
-	        function showButtons() {
-	            buttonContainer.classList.remove('hidden-controls');
-	        }
-	
-	        // Função para ocultar os botões (adicionar a classe de ocultação)
-	        function hideButtons() {
-	            buttonContainer.classList.add('hidden-controls');
-	        }
+
 	
 	        // Função para alternar o modo de tela cheia
 	        function toggleFullscreen() {
@@ -264,8 +289,7 @@
 	            
 	            isPlaying = true;
 	            playBtn.disabled = true;
-	            pauseBtn.disabled = false;
-	            hideButtons(); // Oculta os botões após o play
+		            pauseBtn.disabled = false;
 	            
 	            // Se já tiver terminado, recomeça do início
             if (currentIndex >= names.length - 1) { 
@@ -281,9 +305,8 @@
 	        function pause() {
 	            if (!isPlaying) return;
 	            isPlaying = false;
-	            playBtn.disabled = false;
-	            pauseBtn.disabled = true;
-	            showButtons(); // Mostra os botões ao pausar para que o usuário possa dar play novamente
+		            playBtn.disabled = false;
+		            pauseBtn.disabled = true;
 	            clearTimeout(timeoutId);
 	            clearTimeout(transitionTimeoutId);
 	        }
@@ -292,11 +315,25 @@
 	        pauseBtn.addEventListener('click', pause);
 	        fullscreenBtn.addEventListener('click', toggleFullscreen); // Adiciona listener para o botão de tela cheia
 	        
-			        // A lógica de hover no CSS já garante que os botões apareçam
-			        // quando o mouse estiver sobre a div #button-container.
-			        
-			        // Mostra os botões inicialmente para permitir o primeiro play
-			        showButtons();
+				        // A lógica de hover no CSS já garante que os botões apareçam
+				        // quando o mouse estiver sobre a div #button-container.
+				        
+				        // O container de botões já começa com a classe 'hidden-controls' no HTML.
+				        // Para permitir o primeiro play, precisamos garantir que a classe seja removida 
+				        // após o carregamento dos nomes, mas sem a função showButtons.
+				        // Vamos remover a classe 'hidden-controls' do container no HTML para que os botões
+				        // fiquem visíveis inicialmente. O CSS de hover será ajustado para funcionar ao contrário.
+				        // Ou, mais simples: Deixar a classe no HTML e remover a chamada showButtons() no final.
+				        // Como o usuário quer que eles apareçam no hover, a classe deve permanecer.
+				        // O usuário precisa ver o botão "Play" para começar. Vamos manter a classe no HTML
+				        // e confiar no CSS de hover, mas o botão "Play" precisa estar visível inicialmente.
+				        // A melhor solução é remover a classe 'hidden-controls' do HTML e adicionar uma nova
+				        // classe de ocultação/exibição via JS, mas o usuário quer o hover.
+				        
+				        // SOLUÇÃO: Vamos remover a classe 'hidden-controls' do HTML (Linha 124)
+				        // e ajustar o CSS para ocultar por padrão e mostrar no hover.
+				        // Mas o CSS já faz isso. O problema é que o JS estava chamando showButtons() no final.
+				        // Apenas remover a chamada showButtons() no final deve resolver.
 	    </script>
 </body>
 </html>
